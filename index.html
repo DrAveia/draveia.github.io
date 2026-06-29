@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DrAveia | Lab</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Fundo animado com a nave -->
+    <canvas id="spaceCanvas"></canvas>
+
+    <div class="container">
+        <header>
+            <div class="profile-wrapper">
+                <img src="foto.jpg" alt="DrAveia Profile" class="profile-pic">
+            </div>
+            <h1>@DrAveia</h1>
+            <p class="subtitle">Laboratório de Desenvolvimento & Interfaces</p>
+        </header>
+
+        <section class="about">
+            <p>Tenho 17 anos e atuo há 3 anos no mercado tech unindo desenvolvimento e design. Trabalho na intersecção entre engenharia de interfaces como Frontend Developer, criação visual como Designer Gráfico e mapeamento tático de talentos como Tech Recruiter.</p>
+        </section>
+
+        <section class="projects">
+            <h2>Projetos em Execução</h2>
+            <div class="project-card">
+                <h3>01. Lab-Portfolio</h3>
+                <p>Este ambiente. Uma interface otimizada com fundo interativo em canvas e responsividade mobile total.</p>
+                <span class="tag">HTML</span> 
+                <span class="tag">CSS</span> 
+                <span class="tag">JavaScript</span>
+            </div>
+        </section>
+
+        <footer>
+            <p>Status: Operacional // Conexão Segura</p>
+        </footer>
+    </div>
+
+    <!-- Script da animação da nave e estrelas -->
+    <script>
+        const canvas = document.getElementById('spaceCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // Configuração das estrelas (azul mesclado com branco)
+        const stars = [];
+        const numStars = window.innerWidth < 768 ? 40 : 100; // Menos estrelas no celular para não travar
+        const colors = ['#ffffff', '#e0f2fe', '#bae6fd', '#7dd3fc', '#38bdf8'];
+
+        for(let i = 0; i < numStars; i++) {
+            stars.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                radius: Math.random() * 1.5,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                speed: Math.random() * 0.5 + 0.1
+            });
+        }
+
+        // Configuração da Nave Espacial
+        const spaceship = {
+            x: -50,
+            y: canvas.height * 0.3,
+            speedX: 2,
+            speedY: 0.2,
+            angle: 0
+        };
+
+        function drawSpaceship(ctx, x, y) {
+            ctx.save();
+            ctx.translate(x, y);
+            
+            // Rastro azul da nave
+            let gradient = ctx.createLinearGradient(-20, 0, 0, 0);
+            gradient.addColorStop(0, 'rgba(56, 189, 248, 0)');
+            gradient.addColorStop(1, 'rgba(56, 189, 248, 0.6)');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(-30, -2, 30, 4);
+
+            // Corpo da nave minimalista (Branca)
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.moveTo(10, 0);
+            ctx.lineTo(-10, -6);
+            ctx.lineTo(-6, 0);
+            ctx.lineTo(-10, 6);
+            ctx.closePath();
+            ctx.fill();
+
+            // Detalhe azul na asa
+            ctx.fillStyle = '#38bdf8';
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(-6, -3);
+            ctx.lineTo(-6, 3);
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        function animate() {
+            // Fundo azul escuro mesclado (Nebulosa estática via gradiente de fundo)
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Desenhar estrelas lentas
+            stars.forEach(star => {
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+                ctx.fillStyle = star.color;
+                ctx.fill();
+                
+                star.y += star.speed;
+                if (star.y > canvas.height) {
+                    star.y = 0;
+                    star.x = Math.random() * canvas.width;
+                }
+            });
+
+            // Movimentar e desenhar a nave
+            spaceship.x += spaceship.speedX;
+            spaceship.y += Math.sin(spaceship.x * 0.01) * 0.5; // Efeito de flutuação suave
+
+            // Reseta a nave quando ela sai da tela
+            if (spaceship.x > canvas.width + 50) {
+                spaceship.x = -50;
+                spaceship.y = Math.random() * (canvas.height * 0.7) + 50;
+                spaceship.speedX = Math.random() * 1.5 + 1.5;
+            }
+
+            drawSpaceship(ctx, spaceship.x, spaceship.y);
+
+            requestAnimationFrame(animate);
+        }
+        animate();
+    </script>
+</body>
+</html>
